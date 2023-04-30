@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  amb-backend:
+    build: .
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/app
+
+  amb-db:
+    image: postgres:latest
+    restart: always
+    volumes:
+      - './pg_data:/var/lib/postgresql/data'
+    environment:
+      - POSTGRES_USER=amb
+      - POSTGRES_PASSWORD=amb
+    ports:
+    - 54321:5432
