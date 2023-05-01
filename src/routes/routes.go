@@ -11,6 +11,19 @@ func Setup(app *fiber.App) {
 
 	admin := api.Group("admin")
 
+	// POST api/admin/register
 	admin.Post("register", controllers.Register)
+
+	// POST api/admin/login
 	admin.Post("login", controllers.Login)
+
+	// GET api/admin/user
+	admin.Get("users/:id", controllers.GetUser)
+
+	// TODO: POST api/admin/logout
+
+	// TODO: PUT api/admin/users/info
+	admin.Patch("users/:id", controllers.UpdateUserInfo)
+
+	// TODO: PUT api/admin/password
 }

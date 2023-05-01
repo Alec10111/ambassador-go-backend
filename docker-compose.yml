@@ -9,7 +9,7 @@ services:
       - .:/app
 
   amb-db:
-    image: postgres:latest
+    image: postgres:15.2
     restart: always
     volumes:
       - './pg_data:/var/lib/postgresql/data'
