@@ -3,7 +3,10 @@ package controllers
 import (
 	"ambassador/src/database"
 	"ambassador/src/models"
+	"strconv"
+	"time"
 
+	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -60,6 +63,27 @@ func Login(ctx *fiber.Ctx) error {
 			"message": "Invalid Credentiasl",
 		})
 	}
+	payload := jwt.StandardClaims{
+		Subject:   strconv.Itoa(int(user.Id)),
+		ExpiresAt: &jwt.Time{Time: time.Now().Add(time.Hour * 24)},
+	}
 
-	return ctx.JSON(user)
+	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, payload).SignedString([]byte("secret"))
+
+	if err != nil {
+		return ctx.JSON(fiber.Map{
+			"message": "Invalid Credentiasl",
+		})
+	}
+	cookie := fiber.Cookie{
+		Name:     "jwt",
+		Value:    token,
+		Expires:  time.Now().Add(time.Hour * 24),
+		HTTPOnly: true,
+	}
+	ctx.Cookie(&cookie)
+
+	return ctx.JSON(fiber.Map{
+		"message": "success",
+	})
 }
