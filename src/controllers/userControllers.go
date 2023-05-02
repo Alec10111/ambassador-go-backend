@@ -4,22 +4,30 @@ import (
 	"ambassador/src/database"
 	"ambassador/src/models"
 
+	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetUser(ctx *fiber.Ctx) error {
+func User(ctx *fiber.Ctx) error {
 
-	data := ctx.AllParams()
+	cookie := ctx.Cookies(("jwt"))
 
-	var user models.User
-	database.DB.First(&user, "id = ?", data["id"])
+	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte("secret"), nil
+	})
 
-	if user.Id == 0 {
-		ctx.Status(fiber.StatusNotFound)
+	if err != nil || !token.Valid {
+		ctx.Status(fiber.StatusUnauthorized)
 		return ctx.JSON(fiber.Map{
-			"message": "User not found",
+			"message": "Unauthenticated",
 		})
 	}
+
+	payload := token.Claims.(*jwt.StandardClaims)
+
+	var user models.User
+	database.DB.Where("id = ?", payload.Subject).First(&user)
+
 	return ctx.JSON(user)
 }
 

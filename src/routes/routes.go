@@ -18,7 +18,7 @@ func Setup(app *fiber.App) {
 	admin.Post("login", controllers.Login)
 
 	// GET api/admin/user
-	admin.Get("users/:id", controllers.GetUser)
+	admin.Get("user", controllers.User)
 
 	// TODO: POST api/admin/logout
 
